@@ -11,7 +11,8 @@ on:
   workflow_dispatch:
 jobs:
   deploy:
-    name: Deploy Hexo Public To Pages
+    if: github.repository == 'SMGoro/midi-recorder'
+    name: Deploy Public To Pages
     runs-on: ubuntu-latest
     env:
       TZ: Asia/Shanghai
