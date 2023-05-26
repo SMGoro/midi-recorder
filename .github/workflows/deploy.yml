@@ -1,0 +1,48 @@
+name: Deploy To Github Pages
+
+on:
+  watch:
+    types: [started]
+  push:
+    branches:
+    - main
+  schedule:
+    - cron: "0 */1 * * *"
+  workflow_dispatch:
+jobs:
+  deploy:
+    name: Deploy Hexo Public To Pages
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+    steps:
+    - name: Checkout Repository main branch
+      uses: actions/checkout@main
+      with:
+        submodules: "true"
+
+    - name: Setup Node.js 14.x
+      uses: actions/setup-node@master
+      with:
+        node-version: "14.x"
+
+    - name: Install Dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        npm install
+
+    - name: Generate Public Files
+      run: |
+        # Restore last modified time
+        # git ls-files -z | while read -d '' path; do touch -d "$(git log -1 --format="@%ct" "$path")" "$path"; done
+        # npm run build
+
+    - name: Deploy Github
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        force_orphan: true
+        branch: gh-pages
